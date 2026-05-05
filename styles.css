@@ -98,6 +98,24 @@ body {
     margin-right: 10px;
 }
 
+/* Estilos para turnos.html */
+.h1 {
+    text-align: center;
+    color: #333;
+    font-family: roman;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: 0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
 .registro button {
     padding: 10px;
     background-color: #4CAF50;
