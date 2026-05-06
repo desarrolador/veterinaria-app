@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservar Cirugías - Tu Veterinaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        header h1 {
+            color: #2c5aa0;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .contenido {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .formulario-section, .lista-section {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .formulario-section h2, .lista-section h2 {
+            color: #2c5aa0;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #2c5aa0;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: Arial, sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #2c5aa0;
+            background-color: #f9f9f9;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 15px;
+            background-color: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-group button:hover {
+            background-color: #1e3f5c;
+        }
+
+        .form-group button:active {
+            background-color: #16284a;
+        }
+
+        #lista-cirugias {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .cirugia-card {
+            background-color: #f9f9f9;
+            border-left: 5px solid #2c5aa0;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cirugia-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        .cirugia-card h4 {
+            color: #2c5aa0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .cirugia-card p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .cirugia-card small {
+            color: #999;
+            font-style: italic;
+        }
+
+        .estado-pendiente {
+            background-color: #ffd700;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .estado-confirmado {
+            background-color: #90EE90;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .estado-completado {
+            background-color: #87CEEB;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .estado-cancelado {
+            background-color: #FF6B6B;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .alerta {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alerta-exito {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+
+        .alerta-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #f5c6cb;
+        }
+
+        .alerta-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 5px solid #bee5eb;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .sin-cirugias {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+
+        .sin-cirugias p {
+            font-size: 1.1em;
+        }
+
+        .menu-usuario {
+            background-color: #2c5aa0;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .menu-usuario button {
+            background-color: white;
+            color: #2c5aa0;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .menu-usuario button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .volver-btn {
+            display: inline-block;
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .volver-btn:hover {
+            background-color: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .contenido {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .formulario-section, .lista-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="html/index.html" class="volver-btn">← Volver al Inicio</a>
+
+        <header>
+            <h1>🏥 Reservar Cirugías</h1>
+            <p>Complete el formulario para reservar una fecha para la cirugía de su mascota</p>
+        </header>
+
+        <div class="contenido">
+            <!-- Formulario de Reserva -->
+            <div class="formulario-section">
+                <h2>📝 Formulario de Reserva</h2>
+                
+                <form id="formulario-cirugia">
+                    <div class="form-group">
+                        <label for="mascota">Nombre de la Mascota *</label>
+                        <input type="text" id="mascota" name="mascota" placeholder="Ej: Firulais, Miau" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipo-cirugia">Tipo de Cirugía *</label>
+                        <select id="tipo-cirugia" name="tipo" required>
+                            <option value="">Selecciona una opción</option>
+                            <option value="Castración">Castración</option>
+                            <option value="Esterilización">Esterilización</option>
+                            <option value="Extracción de dientes">Extracción de dientes</option>
+                            <option value="Tumor">Extirpación de tumor</option>
+                            <option value="Cesárea">Cesárea</option>
+                            <option value="Hernia">Reparación de hernia</option>
+                            <option value="Fractura">Reparación de fractura</option>
+                            <option value="Oftalmológica">Cirugía oftalmológica</option>
+                            <option value="Otra">Otra cirugía</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha-cirugia">Fecha Deseada para la Cirugía *</label>
+                        <input type="date" id="fecha-cirugia" name="fechaProgramada" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion-cirugia">Descripción o Notas Adicionales</label>
+                        <textarea id="descripcion-cirugia" name="descripcion" placeholder="Cuéntanos detalles sobre la cirugía, alergias o información importante..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit">Reservar Cirugía</button>
+                    </div>
+                </form>
+
+                <div id="mensaje-formulario"></div>
+            </div>
+
+            <!-- Lista de Cirugías -->
+            <div class="lista-section">
+                <h2>📋 Mis Cirugías Reservadas</h2>
+                <div id="lista-cirugias">
+                    <div class="sin-cirugias">
+                        <p>Cargando tus cirugías...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // Cargar cirugías cuando se abra la página
+        document.addEventListener('DOMContentLoaded', () => {
+            // Solo cargar cirugías si el usuario está autenticado
+            if (tokenUsuario) {
+                cargarCirugias();
+            } else {
+                // Mostrar mensaje para usuarios no autenticados
+                const listaCirugias = document.getElementById('lista-cirugias');
+                listaCirugias.innerHTML = '<div class="sin-cirugias"><p>Inicia sesión para ver tus cirugías reservadas</p></div>';
+            }
+            
+            // Manejo del formulario
+            const formulario = document.getElementById('formulario-cirugia');
+            if (formulario) {
+                formulario.addEventListener('submit', manejarEnvioCirugia);
+            }
+
+            // Establecer fecha mínima a hoy
+            const inputFecha = document.getElementById('fecha-cirugia');
+            if (inputFecha) {
+                const hoy = new Date().toISOString().split('T')[0];
+                inputFecha.min = hoy;
+            }
+        });
+
+        // Manejar envío del formulario
+        async function manejarEnvioCirugia(e) {
+            e.preventDefault();
+
+            const mascota = document.getElementById('mascota').value.trim();
+            const tipo = document.getElementById('tipo-cirugia').value;
+            const fechaProgramada = document.getElementById('fecha-cirugia').value;
+            const descripcion = document.getElementById('descripcion-cirugia').value.trim();
+
+            if (!mascota || !tipo || !fechaProgramada) {
+                mostrarAlerta('Por favor completa todos los campos requeridos', 'error');
+                return;
+            }
+
+            const exito = await reservarCirugia(mascota, tipo, fechaProgramada, descripcion);
+            
+            if (exito) {
+                document.getElementById('formulario-cirugia').reset();
+                document.getElementById('fecha-cirugia').min = new Date().toISOString().split('T')[0];
+            }
+        }
+
+        // Mostrar alerta personalizada
+        function mostrarAlertaLocal(mensaje, tipo = 'info') {
+            const contenedor = document.getElementById('mensaje-formulario');
+            if (!contenedor) return;
+
+            const alerta = document.createElement('div');
+            alerta.className = `alerta alerta-${tipo}`;
+            alerta.textContent = mensaje;
+            
+            contenedor.innerHTML = '';
+            contenedor.appendChild(alerta);
+            
+            setTimeout(() => {
+                alerta.remove();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
+
+    
+</body>
+</html>
