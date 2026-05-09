@@ -124,10 +124,6 @@ header h1 {
     color: #333;
 }
 
-#status-list,
-#vet-updates {
-    /* Estilos para listas dinámicas */
-}
 
 .status-item {
     background-color: #fff;
@@ -302,4 +298,35 @@ header h1 {
 
 .registro button:hover {
     background-color: #45a049;
+}
+
+
+.footer {
+    background-color:#007bff;
+    color:white;
+    text-align:center;
+    padding:10px;
+}
+
+.ul {
+    list-style-type: none;
+    padding:0;
+    margin:0;
+
+}
+
+.li {
+    display: inline;
+    margin-right:20px;
+
+}
+
+.a {
+    text-decoration: none;
+    color: #f9f9f9;
+}
+
+.a:hover {
+    cursor:pointer;
+    color: black;
 }
