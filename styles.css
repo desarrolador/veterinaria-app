@@ -302,6 +302,7 @@ header h1 {
 
 
 .footer ul {
+  font-family: fantasy;
   background-color: #45a049;
   list-style-type: none;
   padding: 20px;
@@ -317,6 +318,14 @@ footer a {
 }
 footer i {
   margin-right: 8px;
+
 }
+
+.footer a:hover {
+    color:#fff;
+    cursor:pointer;
+}
+
+
 
 
