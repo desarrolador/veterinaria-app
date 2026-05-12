@@ -90,5 +90,36 @@
         </form>
 
    </div>
+
+   <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registro-form');
+
+    if (form) {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const fecha = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const aceptarEmail = document.getElementById('aceptar-email').checked;
+
+            // Mostrar en consola
+            console.log({
+                nombre,
+                email,
+                fecha,
+                hora,
+                aceptarEmail
+            });
+
+            // Podés agregar aquí la llamada a tu backend si querés
+            // ejemplo: await reservarTurno(nombre, email, fecha, hora, aceptarEmail);
+        });
+    }
+});
+</script>
+
 </body>
 </html>
