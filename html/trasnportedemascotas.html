@@ -161,41 +161,9 @@
             </form>
             <div id="status" class="status" style="display: none;"></div>
         </div>
-    </div>
+    </div>      
 
-    <script>
-        document.getElementById('titulo-principal').addEventListener('click', function() {
-            const section = document.getElementById('interactiva');
-            if (section.style.display === 'none' || section.style.display === '') {
-                section.style.display = 'block';
-                section.classList.add('fade-in');
-            } else {
-                section.style.display = 'none';
-            }
-        });
+    <script src="app.js"></script>
 
-        document.getElementById('transporte-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = {
-                direccion: document.getElementById('direccion').value,
-                fecha: document.getElementById('fecha').value,
-                hora: document.getElementById('hora').value,
-                mascota: document.getElementById('mascota').value,
-                descripcion: document.getElementById('descripcion').value
-            };
-            
-            // Simular envío (en producción, enviar a API)
-            console.log('Solicitud enviada:', formData);
-            
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = 'Solicitud enviada exitosamente. Recibirás actualizaciones pronto.';
-            statusDiv.style.display = 'block';
-            
-            // Simular actualización del veterinario
-            setTimeout(() => {
-                statusDiv.textContent += ' Actualización: Tu mascota ha sido recogida y está en camino. El veterinario informa que está tranquila.';
-            }, 3000);
-        });
-    </script>
 </body>
 </html>

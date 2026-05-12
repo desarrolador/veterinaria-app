@@ -449,6 +449,26 @@ function mostrarCirugias(cirugias) {
     `).join('');
 }
 
+document.addEventListener('DOMContentLoaded' ,() => {
+    const form = document.getElementById('form-cirugia');
+
+    if(fomr) {
+        form.addEventListener('submit' , async (event) => {
+            event.preventDefault();
+
+            const mascota = document.getElementById('mascota').value;
+            const tipo = document.getElementById('tipo').value;
+            const fechaProgramadda = document.getElementById('fechaProgramada').value;
+            const descripcion = document.getElementById('descripcion').value;
+
+            console.log({ mascota, tipo, fechaProgramada, descripcion});
+
+            await reservarCirugia(mascota, tipo, fechaProgramada, descripcion);
+        
+        });
+    }
+})
+
 // ==================== FUNCIONES DE AUTENTICACIÓN ====================
 
 function verificarAutenticacion() {
