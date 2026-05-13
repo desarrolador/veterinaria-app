@@ -570,38 +570,74 @@
             <p>Estamos comprometidos con la salud y bienestar de tu familia peluda 🐾</p>
         </div>
     </div>
+<script src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
+<script>
+    // Inicializar EmailJS con tu userID
+    emailjs.init("TU_USER_ID");
 
-    <script>
-        function solicitarServicio(nombreServicio) {
-            const mensaje = `¿Deseas solicitar el servicio de ${nombreServicio}?`;
-            if (confirm(mensaje)) {
-                alert(`Solicitud de ${nombreServicio} recibida. Nos pondremos en contacto pronto.`);
+    function solicitarServicio(nombreServicio) {
+        const mensaje = `¿Deseas solicitar el servicio de ${nombreServicio}?`;
+        if (confirm(mensaje)) {
+            emailjs.init("TU_USER_ID");
+            const email = prompt("Ingrese su email:");
+            if (!nombre || !email) {
+                alert("Debe ingresar nombre y email para reservar.");
+                return;
             }
-        }
 
-        function mostrarFormularioContacto() {
-            const nombre = prompt('¿Cuál es tu nombre?');
-            if (nombre) {
-                const email = prompt('¿Cuál es tu email?');
-                if (email) {
-                    const consulta = prompt('¿Cuál es tu consulta?');
-                    if (consulta) {
-                        alert(`Gracias ${nombre}, tu consulta ha sido enviada. Nos pondremos en contacto pronto a ${email}`);
-                    }
+            // Generamos fecha y hora automática (ejemplo: turno en 2 días a las 10:00)
+            const fecha = new Date();
+            fecha.setDate(fecha.getDate() + 2);
+            fecha.setHours(10, 0, 0);
+
+            const fechaFormateada = fecha.toLocaleString();
+
+            alert(`Solicitud de ${nombreServicio} recibida.\nTurno: ${fechaFormateada}\nConfirmación enviada a ${email}`);
+
+            // Enviar email con EmailJS
+            enviarEmailConfirmacion(nombre, email, nombreServicio, fechaFormateada);
+        }
+    }
+
+    function enviarEmailConfirmacion(nombre, email, servicio, fecha) {
+        emailjs.send("TU_SERVICE_ID", "TU_TEMPLATE_ID", {
+            to_name: nombre,
+            to_email: email,
+            servicio: servicio,
+            fecha: fecha
+        }).then(function(response) {
+            console.log("Email enviado correctamente", response.status, response.text);
+        }, function(error) {
+            console.error("Error al enviar email", error);
+        });
+    }
+
+    function mostrarFormularioContacto() {
+        const nombre = prompt('¿Cuál es tu nombre?');
+        if (nombre) {
+            const email = prompt('¿Cuál es tu email?');
+            if (email) {
+                const consulta = prompt('¿Cuál es tu consulta?');
+                if (consulta) {
+                    alert(`Gracias ${nombre}, tu consulta ha sido enviada. Nos pondremos en contacto pronto a ${email}`);
+                    // Aquí también podrías usar enviarEmailConfirmacion para mandar la consulta por correo
                 }
             }
         }
+    }
 
-        // Efecto de scroll suave
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+    // Scroll suave
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
             });
         });
-    </script>
+    });
+</script>
 
+
+             
 </body>
 </html>
