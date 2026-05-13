@@ -1,36 +1,38 @@
- // servicios.js - Lógica limpia para Más Servicios
-
-console.log("🚀 Módulo de servicios cargado y listo");
+// servicios.js - Lógica sin errores y con Ticket de éxito
 
 window.solicitarServicio = function(nombreServicio) {
-    console.log("Evento click detectado para:", nombreServicio);
+    // Calculamos fecha (Hoy + 2 días)
+    const hoy = new Date();
+    hoy.setDate(hoy.getDate() + 2);
+    const opciones = { day: 'numeric', month: 'long' };
+    const fechaTexto = hoy.toLocaleDateString('es-AR', opciones);
 
-    // 1. Pedir nombre
-    const nombre = window.prompt(`¿A nombre de quién registramos la solicitud para ${nombreServicio}?`);
-    if (!nombre) return; 
+    // Confirmación inicial
+    if (window.confirm(`¿Deseas reservar ${nombreServicio} para el ${fechaTexto}?`)) {
+        
+        // Ponemos el nombre del servicio en el input "asunto"
+        const inputAsunto = document.getElementById('asunto');
+        if (inputAsunto) {
+            inputAsunto.value = nombreServicio;
+        }
 
-    // 2. Pedir email
-    const email = window.prompt("¿A qué correo enviamos la confirmación?");
-    if (!email) {
-        alert("Se requiere un email para procesar la solicitud.");
-        return;
+        // Bajamos suavemente al formulario
+        document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' });
     }
-
-    // 3. Calcular fecha (2 días después)
-    const fecha = new Date();
-    fecha.setDate(fecha.getDate() + 2);
-    const fechaTexto = fecha.toLocaleString('es-AR', { 
-        dateStyle: 'long', 
-        timeStyle: 'short' 
-    });
-
-    // 4. Mostrar éxito
-    alert(`✅ ¡Perfecto ${nombre}!\nHemos registrado tu pedido de ${nombreServicio}.\nTurno sugerido: ${fechaTexto}\nEnviamos los detalles a: ${email}`);
-    
-    console.log("Datos capturados:", {
-        cliente: nombre,
-        correo: email,
-        servicio: nombreServicio,
-        fecha: fechaTexto
-    });
 };
+
+// Escuchamos cuando se envía el formulario
+document.getElementById('form-servicios')?.addEventListener('submit', function(e) {
+    e.preventDefault(); // Evita que la página se refresque sola
+
+    const nombreUser = document.getElementById('nombre').value;
+    const servicioElegido = document.getElementById('asunto').value;
+
+    // Ocultamos el formulario y mostramos el ticket de éxito
+    document.getElementById('contenedor-formulario').classList.add('hidden');
+    const ticket = document.getElementById('ticket-exito');
+    const detalle = document.getElementById('detalle-reserva');
+
+    ticket.classList.remove('hidden');
+    detalle.innerHTML = `Perfecto <strong>${nombreUser}</strong>, hemos registrado tu pedido de <strong>${servicioElegido}</strong>.<br>Nos vemos pronto.`;
+});
