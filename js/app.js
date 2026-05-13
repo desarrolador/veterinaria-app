@@ -1,4 +1,6 @@
-// ==================== CONFIGURACIÓN ====================
+
+//configuracion
+
 const API_URL = 'http://localhost:3001/api';
 let tokenUsuario = localStorage.getItem('token') || null;
 let usuarioActual = JSON.parse(localStorage.getItem('usuario')) || null;
@@ -185,7 +187,8 @@ async function eliminarTurno(turnoId) {
         const respuesta = await fetch(`${API_URL}/turnos/${turnoId}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${tokenUsuario}`
+                'Authorization': `Bearer ${tokenUsuario}`,
+               
             }
         });
 
@@ -285,6 +288,7 @@ function mostrarConsultas(consultas) {
 
 // ==================== FUNCIONES DE TRANSPORTE ====================
 
+// --- FUNCIÓN PARA ENVIAR A LA API ---
 async function solicitarTransporte(direccion, fecha, hora, mascota, descripcion) {
     if (!verificarAutenticacion()) return;
 
@@ -295,79 +299,65 @@ async function solicitarTransporte(direccion, fecha, hora, mascota, descripcion)
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${tokenUsuario}`
             },
-            body: JSON.stringify({
-                direccion,
-                fecha,
-                hora,
-                mascota,
-                descripcion
-            })
+            body: JSON.stringify({ direccion, fecha, hora, mascota, descripcion })
         });
 
         const datos = await respuesta.json();
+
+        // 🟢 REGISTRO EN CONSOLA: Aquí verás lo que responde tu servidor
+        console.log("Respuesta del servidor (Transporte):", datos);
 
         if (!respuesta.ok) {
             mostrarAlerta(datos.error || 'Error al solicitar transporte', 'error');
             return false;
         }
 
-        mostrarAlerta(datos.mensaje, 'exito');
-        cargarTransportes();
+        mostrarAlerta('Transporte solicitado con éxito', 'exito');
+        cargarTransportes(); // Recarga la lista visual
         return true;
 
     } catch (error) {
         console.error('Error en solicitarTransporte:', error);
-        mostrarAlerta('Error de conexión', 'error');
         return false;
     }
 }
 
-async function cargarTransportes() {
-    if (!verificarAutenticacion()) return;
+// --- ESCUCHADOR DEL FORMULARIO ---
+document.addEventListener('DOMContentLoaded', () => {
+    const formTransporte = document.getElementById('transporte-form');
 
-    try {
-        const respuesta = await fetch(`${API_URL}/transporte`, {
-            headers: {
-                'Authorization': `Bearer ${tokenUsuario}`
+    if (formTransporte) {
+        formTransporte.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Captura de datos
+            const direccion = document.getElementById('direccion').value;
+            const fecha = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const mascota = document.getElementById('mascota').value;
+            const descripcion = document.getElementById('descripcion').value;
+
+            // 🟢 REGISTRO EN CONSOLA: Ver lo que el usuario escribió
+            console.log("📤 Intentando registrar transporte:", { 
+                direccion, fecha, hora, mascota, descripcion 
+            });
+
+            const exito = await solicitarTransporte(direccion, fecha, hora, mascota, descripcion);
+
+            if (exito) {
+                formTransporte.reset();
+                const statusDiv = document.getElementById('status');
+                if (statusDiv) {
+                    statusDiv.textContent = 'Solicitud enviada exitosamente.';
+                    statusDiv.style.display = 'block';
+                }
             }
         });
-
-        if (!respuesta.ok) {
-            throw new Error('Error al obtener transportes');
-        }
-
-        const transportes = await respuesta.json();
-        mostrarTransportes(transportes);
-
-    } catch (error) {
-        console.error('Error en cargarTransportes:', error);
     }
-}
-
-function mostrarTransportes(transportes) {
-    const contenedor = document.getElementById('lista-transportes');
-    
-    if (!contenedor) return;
-
-    if (transportes.length === 0) {
-        contenedor.innerHTML = '<p>No hay solicitudes de transporte</p>';
-        return;
-    }
-
-    contenedor.innerHTML = transportes.map(transporte => `
-        <div class="transporte-card">
-            <h4>Transporte para: ${transporte.mascota}</h4>
-            <p><strong>Dirección:</strong> ${transporte.direccion}</p>
-            <p><strong>Fecha:</strong> ${transporte.fecha}</p>
-            <p><strong>Hora:</strong> ${transporte.hora}</p>
-            <p><strong>Estado:</strong> <span class="estado-${transporte.estado}">${transporte.estado}</span></p>
-            <p><strong>Descripción:</strong> ${transporte.descripcion || '-'}</p>
-            <small>Solicitado: ${new Date(transporte.fechaCreacion).toLocaleDateString()}</small>
-        </div>
-    `).join('');
-}
-
+});
 // ==================== FUNCIONES DE CIRUGÍAS ====================
+
+
 
 async function reservarCirugia(mascota, tipo, fechaProgramada, descripcion) {
     if (!verificarAutenticacion()) return;
@@ -452,7 +442,7 @@ function mostrarCirugias(cirugias) {
 document.addEventListener('DOMContentLoaded' ,() => {
     const form = document.getElementById('form-cirugia');
 
-    if(fomr) {
+    if(form) {
         form.addEventListener('submit' , async (event) => {
             event.preventDefault();
 
@@ -468,6 +458,71 @@ document.addEventListener('DOMContentLoaded' ,() => {
         });
     }
 })
+
+async function reservarCirugia(mascota, tipo, fechaProgramada, descripcion) {
+    if (!verificarAutenticacion()) return;
+
+    try {
+        const respuesta = await fetch(`${API_URL}/cirugias`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenUsuario}`
+            },
+            body: JSON.stringify({
+                mascota,
+                tipo,
+                fechaProgramada,
+                descripcion
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        // 🟢 ESTO ES LO QUE VERÁS EN CONSOLA AL RECIBIR RESPUESTA
+        console.log("Respuesta del servidor:", datos);
+
+        if (!respuesta.ok) {
+            mostrarAlerta(datos.error || 'Error al reservar cirugía', 'error');
+            return false;
+        }
+
+        mostrarAlerta('Reserva realizada con éxito', 'exito');
+        cargarCirugias(); // Recarga la lista para ver la nueva cirugía
+        return true;
+
+    } catch (error) {
+        console.error('Error de conexión:', error);
+        mostrarAlerta('Error de conexión con el servidor', 'error');
+        return false;
+    }
+}
+
+// Escuchador global para el formulario
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('formulario-cirugia'); // ID correcto según tu HTML
+
+    if (form) {
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Captura de datos usando los IDs de tu segundo código
+            const mascota = document.getElementById('mascota').value.trim();
+            const tipo = document.getElementById('tipo-cirugia').value;
+            const fecha = document.getElementById('fecha-cirugia').value;
+            const descripcion = document.getElementById('descripcion-cirugia').value.trim();
+
+            // 🟢 LOG PARA VER QUÉ ESTÁS ENVIANDO
+            console.log("Datos capturados para enviar:", { mascota, tipo, fecha, descripcion });
+
+            const exito = await reservarCirugia(mascota, tipo, fecha, descripcion);
+            
+            if (exito) {
+                form.reset();
+            }
+        });
+    }
+});
 
 // ==================== FUNCIONES DE AUTENTICACIÓN ====================
 
@@ -508,6 +563,7 @@ function cerrarSesion() {
         }, 1000);
     }
 }
+
 
 // ==================== FUNCIONES AUXILIARES ====================
 
