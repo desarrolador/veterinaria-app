@@ -313,7 +313,7 @@ async function solicitarTransporte(direccion, fecha, hora, mascota, descripcion)
         }
 
         mostrarAlerta('Transporte solicitado con éxito', 'exito');
-        cargarTransportes(); // Recarga la lista visual
+        // cargarTransportes();
         return true;
 
     } catch (error) {
@@ -356,7 +356,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // ==================== FUNCIONES DE CIRUGÍAS ====================
+// Función para capturar el clic en las tarjetas y llevar al usuario al formulario
+function solicitarServicio(nombreServicio) {
+    // 1. Buscamos el formulario y el select
+    const formulario = document.getElementById('seccion-reserva-cirugia');
+    const selectorTipo = document.getElementById('tipo-cirugia');
 
+    if (formulario) {
+        // 2. Hace que la página baje suavemente hasta el formulario
+        formulario.scrollIntoView({ behavior: 'smooth' });
+
+        // 3. Si el servicio clickeado coincide con una opción del select, lo selecciona
+        if (selectorTipo) {
+            // Convertimos a minúsculas para comparar mejor o buscamos coincidencias
+            const opciones = Array.from(selectorTipo.options);
+            const opcionCoincidente = opciones.find(opt => 
+                nombreServicio.toLowerCase().includes(opt.value.toLowerCase()) ||
+                opt.value.toLowerCase().includes(nombreServicio.toLowerCase())
+            );
+
+            if (opcionCoincidente) {
+                selectorTipo.value = opcionCoincidente.value;
+                // Efecto visual de resaltado temporal al selector
+                selectorTipo.style.borderColor = '#667eea';
+                setTimeout(() => selectorTipo.style.borderColor = '#edf2f7', 2000);
+            }
+        }
+        
+        console.log(`Navegando a reserva para: ${nombreServicio}`);
+    } else {
+        console.error("No se encontró la sección de reserva de cirugía.");
+    }
+}
 
 
 async function reservarCirugia(mascota, tipo, fechaProgramada, descripcion) {
@@ -606,8 +637,8 @@ window.app = {
     eliminarTurno,
     enviarConsulta,
     cargarConsultas,
+    cargarTransporte,
     solicitarTransporte,
-    cargarTransportes,
     reservarCirugia,
     cargarCirugias,
     cerrarSesion,
@@ -615,3 +646,4 @@ window.app = {
     mostrarAlerta,
     validarEmail
 };
+
